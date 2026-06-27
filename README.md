@@ -51,8 +51,13 @@ both `Codex` and `Codex Computer Use` in:
 - **Screen & System Audio Recording** - allows screenshots and visual state
   detection. Older macOS versions may label this pane **Screen Recording**.
 
-Quit and reopen Codex after changing either permission so macOS applies the new
-grants to the running processes. Then verify the setup from the repository root:
+If Codex is running from a terminal, also enable both permissions for the host
+terminal application, such as `Terminal` or `iTerm`. macOS applies these grants
+to the application that launched the controller.
+
+Quit and reopen Codex and its host terminal, when applicable, after changing
+either permission so macOS applies the new grants to the running processes. Then
+verify the setup from the repository root:
 
 ```bash
 pnpm tos doctor
