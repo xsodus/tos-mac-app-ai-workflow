@@ -46,6 +46,10 @@ The TypeScript controller provides the low-level interface used by the game loop
 pnpm tos launch
 pnpm tos screenshot artifacts/tos-screen.png
 pnpm tos click 640 420
+pnpm tos window-screenshot artifacts/tos-window.png
+pnpm tos window-click 640 420
+pnpm tos key 36
+pnpm tos doctor
 pnpm test
 ```
 

@@ -13,13 +13,49 @@ The install on this machine is an iOS-on-Mac wrapper. Spotlight can surface the 
 
 ## Workflow
 
+### Controller Contract
+
+Run the TypeScript controller from the repository root:
+
+```bash
+cd /Users/akkaponsomjai/personal/tos-mac-app-ai-workflow
+pnpm tos doctor
+```
+
+The controller is the primary keyboard, pointer, and screenshot interface for
+this skill. Before launch, require both `accessibility` and `screenRecording` to
+be `true`. If either is false, stop and tell the user which macOS permission is
+missing; do not pretend the live loop ran.
+
+Available commands:
+
+```bash
+pnpm tos launch
+pnpm tos focus
+pnpm tos window-screenshot artifacts/tos-current.png
+pnpm tos window-click <image-x> <image-y> artifacts/tos-current.png
+pnpm tos key <macOS-key-code> [command|control|option|shift ...]
+```
+
+Use `window-screenshot`, not a whole-desktop screenshot, for game decisions. It
+returns the game window bounds, pixel dimensions, and an image whose top-left
+corner is `(0, 0)`. Calculate every click in pixels from that current image, then
+pass the pixel point and image path to `window-click`. The controller handles
+Retina scaling, translates the result to the correct global point, and injects
+the click through Core Graphics even when the game is on a monitor above or to
+the left of the primary display.
+
+After every state-changing input, capture a fresh window screenshot and inspect
+it before choosing the next input. Never reuse coordinates from a previous
+window size.
+
 ### Launch
 
-1. Open Spotlight with `Cmd+Space`.
-2. Type `Tree of Savior M Extreme` or `TOSM TH` if the full title is not resolving.
+1. Run `pnpm tos launch` to open Spotlight, type the exact app name, press Return,
+   wait for the game process, and bring its window to the front.
+2. If the full title is not resolving, run `pnpm tos launch "TOSM TH"`.
 3. If multiple results appear, select the application result, not a document or web suggestion.
-4. Press `Return` to launch the app.
-5. Confirm the `Tree of Savior M Extreme` window appears and is frontmost.
+4. Capture a window screenshot and confirm the title screen appears.
 6. If Spotlight does not show the app, refine the query with more of the title. Do not rely on `open` with the app path as the primary fallback for this wrapper.
 
 ### Title Screen
@@ -30,7 +66,8 @@ The install on this machine is an iOS-on-Mac wrapper. Spotlight can surface the 
 
 ### Quest Loop
 
-Use Computer Use for visual interaction with the game UI.
+Use controller screenshots for visual decisions and controller click/key commands
+for interaction with the game UI.
 
 1. If the app is not frontmost, run the launch workflow first.
 2. If the game is on the barrack screen, click the visible `Start` button to enter the session.
@@ -40,10 +77,21 @@ Use Computer Use for visual interaction with the game UI.
 6. If the game offers multiple fellows, choose the previously used or clearly recommended fellow. Do not purchase, fuse, dismiss, delete, or upgrade fellows unless the user explicitly asks.
 7. If no fellow can be safely selected, continue the quest loop without one and mention that no fellow was available.
 8. Prioritize main quests first, then sub quests. Follow the visible quest prompt, auto-path button, objective marker, or dialogue/action control provided by the game UI.
-9. After each quest interaction, wait for the next clear state: movement finished, dialogue advanced, reward accepted, combat resolved, or a new objective displayed.
-10. Re-check for a fellow after session recovery, map changes, or character reloads. If the fellow disappears, repeat the fellow check before continuing quests.
-11. Repeat until neither main nor sub quest entries are visible and no quest objective marker or quest action prompt remains.
-12. Stop the loop when no quests are visible. Report that the quest list appears exhausted.
+9. When dialogue first appears, inspect the visible auto-talk control. If it is
+   `None` or off, click its slider once and confirm it displays a timed interval
+   such as `6 seconds`. Leave auto-talk enabled for the rest of the loop so
+   dialogue pages advance without blocking.
+10. When a normal quest-completion reward dialog appears, click the teal
+    `ตอบรับ` (Accept) button. Do not click `ปฏิเสธ` (Decline). This permission
+    applies only to ordinary quest rewards and does not authorize purchases or
+    premium-currency choices.
+11. After each quest interaction, wait for the next clear state: movement finished, dialogue advanced, reward accepted, combat resolved, or a new objective displayed.
+12. Re-check for a fellow after session recovery, map changes, or character reloads. If the fellow disappears, repeat the fellow check before continuing quests.
+13. Repeat until neither main nor sub quest entries are visible and no quest objective marker or quest action prompt remains.
+14. Stop the loop when no quests are visible. Report that the quest list appears exhausted.
+
+Do not report completion unless the final screenshot visibly confirms that no
+main quest, sub quest, objective marker, or quest action prompt remains.
 
 ### Timeout Recovery
 

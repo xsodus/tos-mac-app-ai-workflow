@@ -6,7 +6,9 @@ export type GameState =
   | "in-game-no-fellow"
   | "main-quest"
   | "sub-quest"
+  | "quest-dialogue-auto-off"
   | "quest-dialogue"
+  | "quest-reward"
   | "loading"
   | "disconnected"
   | "quests-exhausted"
@@ -25,7 +27,8 @@ export type GameAction =
   | "summon-fellow"
   | "advance-main-quest"
   | "advance-sub-quest"
-  | "advance-dialogue"
+  | "enable-auto-talk"
+  | "accept-quest-reward"
   | "wait";
 
 export interface GameAdapter {
@@ -118,8 +121,12 @@ function actionFor(state: GameState): GameAction {
       return "advance-main-quest";
     case "sub-quest":
       return "advance-sub-quest";
+    case "quest-dialogue-auto-off":
+      return "enable-auto-talk";
     case "quest-dialogue":
-      return "advance-dialogue";
+      return "wait";
+    case "quest-reward":
+      return "accept-quest-reward";
     case "loading":
     case "unknown":
       return "wait";
