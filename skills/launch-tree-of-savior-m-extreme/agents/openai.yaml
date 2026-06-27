@@ -1,0 +1,4 @@
+interface:
+  display_name: "Play Tree of Savior M Extreme"
+  short_description: "Launch, enter the session, and loop quests."
+  default_prompt: "Use this skill when the user wants to launch Tree of Savior M Extreme on macOS, move past the title/server screen, enter the session from the barrack screen, or continue playing visible main and sub quests. Open the game through Spotlight, click through the title screen when needed, press the barrack Start button, select the character, keep a fellow/companion active when the UI provides a safe summon or deploy action, run visible quest objectives, recover from session timeout by returning to the start flow, and stop when no quests remain."

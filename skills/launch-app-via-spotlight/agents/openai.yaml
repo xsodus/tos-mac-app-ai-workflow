@@ -1,0 +1,4 @@
+interface:
+  display_name: "Launch App via Spotlight"
+  short_description: "Use Spotlight to launch a macOS app from the keyboard."
+  default_prompt: "Use this skill when the user wants to open an installed macOS app quickly from the keyboard. Search in Spotlight, select the best matching app result, and confirm the app window appears."
