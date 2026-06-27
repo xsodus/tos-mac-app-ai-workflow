@@ -37,9 +37,29 @@ This project only focuses on the Tree of Savior Extreme app and its related auto
 Current skills:
 
 - `launch-app-via-spotlight`
-- `launch-tree-of-savior-m-extreme`
+- `run-tree-of-savior-m-extreme-quests`
 
 Each skill lives under `skills/<skill-name>/SKILL.md` and should stay specific to Tree of Savior Extreme use cases.
+
+## Phase 1: Codex on macOS
+
+The first phase targets the Codex desktop app and its Computer Use helper. Before
+running the controller, open **System Settings > Privacy & Security** and enable
+both `Codex` and `Codex Computer Use` in:
+
+- **Accessibility** - allows keyboard and pointer control.
+- **Screen & System Audio Recording** - allows screenshots and visual state
+  detection. Older macOS versions may label this pane **Screen Recording**.
+
+Quit and reopen Codex after changing either permission so macOS applies the new
+grants to the running processes. Then verify the setup from the repository root:
+
+```bash
+pnpm tos doctor
+```
+
+Continue only when the command reports both `"accessibility": true` and
+`"screenRecording": true`.
 
 ## macOS Controller
 
@@ -56,8 +76,6 @@ pnpm tos doctor
 pnpm test
 ```
 
-The terminal or Codex process running these commands needs macOS Accessibility
-permission for keyboard and mouse control, plus Screen Recording permission for
-screenshots. `src/game-loop.ts` keeps visual state detection behind `GameAdapter`;
-the next adapter can use screenshots or recorded UI events without changing the
+`src/game-loop.ts` keeps visual state detection behind `GameAdapter`; the next
+adapter can use screenshots or recorded UI events without changing the
 quest-loop safety rules.

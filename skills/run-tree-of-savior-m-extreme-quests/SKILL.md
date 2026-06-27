@@ -1,13 +1,16 @@
 ---
-name: launch-tree-of-savior-m-extreme
-description: Launch and operate Tree of Savior M Extreme on macOS using Spotlight and visual Computer Use. Use when the user wants to open this specific game, pass the title/server screen, start or resume a session from the barrack screen, select a character, ensure a fellow/companion is present when possible, or loop through main and sub quests until there are no visible quests left.
+name: run-tree-of-savior-m-extreme-quests
+description: Run visible main and sub quests in Tree of Savior M Extreme on macOS using visual Computer Use until no quests remain. Use when the user wants to continue, resume, or complete TOS M Extreme quests; launch and session-entry steps are only setup or recovery for reaching the quest loop.
 ---
 
-# Launch Tree Of Savior M Extreme
+# Run Tree Of Savior M Extreme Quests
 
 ## When To Use
 
-Use this skill when the goal is to open `Tree of Savior M Extreme` from the keyboard on macOS, move through the title/server screen into the barrack screen, or keep playing visible main and sub quests until the quest list is exhausted.
+Use this skill when the goal is to keep playing visible main and sub quests in
+`Tree of Savior M Extreme` until the quest list is exhausted. Launch, title
+screen, barrack, and character-selection actions exist only to reach or recover
+the active quest session.
 
 The install on this machine is an iOS-on-Mac wrapper. Spotlight can surface the app, but path-based `open` commands against the top-level container or nested `Wrapper/TOSM TH.app` bundle may be rejected by LaunchServices.
 
@@ -81,7 +84,12 @@ capturing and acting until the explicit exhaustion check below succeeds.
 5. Check whether a fellow/companion is present before running objectives. If no fellow is visible, use the fellow/companion menu, summon control, or visible fellow prompt to deploy an available fellow.
 6. If the game offers multiple fellows, choose the previously used or clearly recommended fellow. Do not purchase, fuse, dismiss, delete, or upgrade fellows unless the user explicitly asks.
 7. If no fellow can be safely selected, continue the quest loop without one and mention that no fellow was available.
-8. Prioritize main quests first, then sub quests. Follow the visible quest prompt, auto-path button, objective marker, or dialogue/action control provided by the game UI.
+8. Prioritize main quests first, then sub quests. A visible quest tracker entry
+   is not necessarily active, even when unrelated auto-combat is running. Click
+   the highest-priority visible quest entry to activate it, capture a fresh
+   screenshot, and confirm that auto-path, dialogue, an objective marker, or
+   another quest-specific state begins. If it does not activate, click the next
+   visible quest entry and verify again.
 9. When dialogue first appears, inspect the visible auto-talk control. If it is
    `None` or off, click its slider once and confirm it displays a timed interval
    such as `6 seconds`. Leave auto-talk enabled for the rest of the loop so
@@ -93,13 +101,17 @@ capturing and acting until the explicit exhaustion check below succeeds.
 11. Immediately after accepting a reward, capture a fresh screenshot. If a main
     quest is visible, click it. Otherwise click the first visible sub quest.
     Accepting a reward is never a stopping condition.
-12. While auto-path, combat, dialogue, loading, or an objective animation is
-    visibly progressing, wait 8 seconds, capture a fresh screenshot, and
-    continue the loop. Do not repeatedly click the tracker while progress is
-    active.
-13. If the character is idle and any quest tracker entry is visible, click the
-    highest-priority visible entry: main quest first, then sub quest. Capture a
-    fresh screenshot after the click.
+12. While verified quest auto-path, quest combat, dialogue, loading, or an
+    objective animation is visibly progressing, choose a new random wait from
+    15 through 60 seconds, wait that duration, capture a fresh screenshot, and
+    continue the loop. Do not repeatedly click the tracker while verified quest
+    progress is active. Generic auto-combat without a quest-specific indicator
+    does not count as verified quest progress.
+13. If any quest tracker entry is visible and no verified quest progress is
+    active, click the highest-priority visible entry: main quest first, then sub
+    quest. Do this even if the character is fighting nearby enemies. Capture a
+    fresh screenshot after every click and activate the next visible entry if
+    the first one does not start a quest-specific state.
 14. Re-check for a fellow after session recovery, map changes, or character
     reloads. If the fellow disappears, repeat the fellow check before continuing
     quests.
