@@ -25,6 +25,9 @@ pnpm nemo symlink
 The `nemo` command lets you choose whether to install:
 
 - skills
+
+Codex is available as both a project-local `.codex/skills` target and a global
+`~/.codex/skills` target.
 You can install into this project or into your home directory so the same skills are available across projects.
 
 ## Scope

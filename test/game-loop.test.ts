@@ -40,8 +40,13 @@ test("plays the complete title-to-quest-exhaustion loop", async () => {
     "quest-dialogue-auto-off",
     "quest-dialogue",
     "quest-reward",
+    "quest-progressing",
     "main-quest",
+    "quest-dialogue",
+    "quest-reward",
     "sub-quest",
+    "quests-exhausted",
+    "quests-exhausted",
     "quests-exhausted",
   ]);
 
@@ -58,8 +63,13 @@ test("plays the complete title-to-quest-exhaustion loop", async () => {
     "enable-auto-talk",
     "wait",
     "accept-quest-reward",
+    "wait",
     "advance-main-quest",
+    "wait",
+    "accept-quest-reward",
     "advance-sub-quest",
+    "wait",
+    "wait",
   ]);
 });
 
@@ -69,4 +79,26 @@ test("stops after three repeated recovery failures", async () => {
 
   assert.equal(result.status, "stuck");
   assert.equal(adapter.actions.length, 2);
+});
+
+test("resets empty-state confirmation when another quest appears", async () => {
+  const adapter = new ScriptedAdapter([
+    "quests-exhausted",
+    "quests-exhausted",
+    "main-quest",
+    "quests-exhausted",
+    "quests-exhausted",
+    "quests-exhausted",
+  ]);
+
+  const result = await playFullLoop(adapter);
+
+  assert.equal(result.status, "completed");
+  assert.deepEqual(adapter.actions, [
+    "wait",
+    "wait",
+    "advance-main-quest",
+    "wait",
+    "wait",
+  ]);
 });

@@ -12,12 +12,14 @@ const ROOT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'
 const SKILLS_SRC = path.join(ROOT_DIR, 'skills');
 
 const LOCAL_SKILL_TARGETS = [
+  { name: '.codex/skills    (Codex - this project)', value: path.join(ROOT_DIR, '.codex', 'skills') },
   { name: '.claude/skills   (Claude Code - this project)', value: path.join(ROOT_DIR, '.claude', 'skills') },
   { name: '.cursor/skills   (Cursor - this project)', value: path.join(ROOT_DIR, '.cursor', 'skills') },
   { name: '.gemini/skills   (Gemini CLI - this project)', value: path.join(ROOT_DIR, '.gemini', 'skills') },
 ];
 
 const GLOBAL_SKILL_TARGETS = [
+  { name: '~/.codex/skills   (Codex)', value: path.join(os.homedir(), '.codex', 'skills') },
   { name: '~/.agents/skills  (shared pool)', value: path.join(os.homedir(), '.agents', 'skills') },
   { name: '~/.claude/skills  (Claude Code)', value: path.join(os.homedir(), '.claude', 'skills') },
   { name: '~/.cursor/skills  (Cursor)', value: path.join(os.homedir(), '.cursor', 'skills') },

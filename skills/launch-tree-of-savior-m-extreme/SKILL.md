@@ -69,7 +69,12 @@ window size.
 Use controller screenshots for visual decisions and controller click/key commands
 for interaction with the game UI.
 
+This is a persistent loop. Do not return control to the user after launching,
+entering the game, accepting one reward, or starting one objective. Continue
+capturing and acting until the explicit exhaustion check below succeeds.
+
 1. If the app is not frontmost, run the launch workflow first.
+   A `TOSM TH` process with no window does not count as running: relaunch it.
 2. If the game is on the barrack screen, click the visible `Start` button to enter the session.
 3. On the character screen, select the available or previously used character, then activate the visible enter/start control.
 4. Once in game, inspect the quest tracker and nearby objective markers.
@@ -85,12 +90,30 @@ for interaction with the game UI.
     `ตอบรับ` (Accept) button. Do not click `ปฏิเสธ` (Decline). This permission
     applies only to ordinary quest rewards and does not authorize purchases or
     premium-currency choices.
-11. After each quest interaction, wait for the next clear state: movement finished, dialogue advanced, reward accepted, combat resolved, or a new objective displayed.
-12. Re-check for a fellow after session recovery, map changes, or character reloads. If the fellow disappears, repeat the fellow check before continuing quests.
-13. Repeat until neither main nor sub quest entries are visible and no quest objective marker or quest action prompt remains.
-14. Stop the loop when no quests are visible. Report that the quest list appears exhausted.
+11. Immediately after accepting a reward, capture a fresh screenshot. If a main
+    quest is visible, click it. Otherwise click the first visible sub quest.
+    Accepting a reward is never a stopping condition.
+12. While auto-path, combat, dialogue, loading, or an objective animation is
+    visibly progressing, wait 8 seconds, capture a fresh screenshot, and
+    continue the loop. Do not repeatedly click the tracker while progress is
+    active.
+13. If the character is idle and any quest tracker entry is visible, click the
+    highest-priority visible entry: main quest first, then sub quest. Capture a
+    fresh screenshot after the click.
+14. Re-check for a fellow after session recovery, map changes, or character
+    reloads. If the fellow disappears, repeat the fellow check before continuing
+    quests.
+15. Never infer exhaustion from a hidden tracker during combat, dialogue,
+    loading, a reward dialog, a transition, or a cinematic.
+16. Count an empty state only when a fresh screenshot shows an idle,
+    unobstructed in-game UI with no main quest, sub quest, objective marker, or
+    quest action prompt. Require three empty states, each separated by 5
+    seconds. Reset the count to zero whenever any quest or progress state
+    appears.
+17. Stop only after the third consecutive confirmed empty state. Report that
+    the quest list appears exhausted.
 
-Do not report completion unless the final screenshot visibly confirms that no
+Do not report completion unless three final screenshots visibly confirm that no
 main quest, sub quest, objective marker, or quest action prompt remains.
 
 ### Timeout Recovery

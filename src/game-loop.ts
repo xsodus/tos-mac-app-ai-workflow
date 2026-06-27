@@ -9,6 +9,7 @@ export type GameState =
   | "quest-dialogue-auto-off"
   | "quest-dialogue"
   | "quest-reward"
+  | "quest-progressing"
   | "loading"
   | "disconnected"
   | "quests-exhausted"
@@ -51,6 +52,7 @@ export type LoopResult = {
 export type GameLoopOptions = {
   maxSteps?: number;
   maxRepeatedRecoveryStates?: number;
+  requiredEmptyObservations?: number;
 };
 
 export async function playFullLoop(
@@ -59,22 +61,32 @@ export async function playFullLoop(
 ): Promise<LoopResult> {
   const maxSteps = options.maxSteps ?? 200;
   const maxRepeatedRecoveryStates = options.maxRepeatedRecoveryStates ?? 3;
+  const requiredEmptyObservations = options.requiredEmptyObservations ?? 3;
   const events: LoopEvent[] = [];
   let previousRecoveryState: GameState | undefined;
   let repeatedRecoveryStates = 0;
+  let emptyObservations = 0;
 
   for (let step = 1; step <= maxSteps; step += 1) {
     const observation = await adapter.observe();
 
     if (observation.state === "quests-exhausted") {
-      events.push({ step, observation });
-      return {
-        status: "completed",
-        events,
-        reason: "No main quests, sub quests, objective markers, or quest prompts remain.",
-      };
+      emptyObservations += 1;
+      if (emptyObservations >= requiredEmptyObservations) {
+        events.push({ step, observation });
+        return {
+          status: "completed",
+          events,
+          reason: `No quests or quest prompts remained across ${emptyObservations} consecutive observations.`,
+        };
+      }
+
+      events.push({ step, observation, action: "wait" });
+      await adapter.act("wait");
+      continue;
     }
 
+    emptyObservations = 0;
     const action = actionFor(observation.state);
     events.push({ step, observation, action });
 
@@ -127,6 +139,8 @@ function actionFor(state: GameState): GameAction {
       return "wait";
     case "quest-reward":
       return "accept-quest-reward";
+    case "quest-progressing":
+      return "wait";
     case "loading":
     case "unknown":
       return "wait";
