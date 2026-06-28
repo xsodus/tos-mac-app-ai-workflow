@@ -1,4 +1,4 @@
-# Desktop Loop Engineering
+# Desktop AI Loop Engineering
 
 An experiment in AI workflow automation, visual decision loops, and reusable
 macOS desktop control.
