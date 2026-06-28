@@ -1,17 +1,17 @@
 {
-  "name": "tos-mac-app-ai-workflow",
+  "name": "desktop-loop-engineering",
   "version": "1.0.0",
-  "description": "Shared AI agent skills and harness configs for macOS workflow automation",
+  "description": "Skill-based macOS desktop automation framework for visual AI workflows and loop engineering",
   "type": "module",
   "scripts": {
     "nemo": "node scripts/nemo.mjs",
     "install:skills": "node scripts/nemo.mjs symlink",
-    "tos": "node --experimental-strip-types src/cli.ts",
+    "workflow": "node --experimental-strip-types src/cli.ts",
     "test": "node --experimental-strip-types --test test/*.test.ts"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@inquirer/prompts": "^8.3.2",
     "yargs": "^18.0.0"

@@ -1,32 +1,46 @@
 import { resolve } from "node:path";
 import { MacAppController } from "./macos-controller.ts";
 import {
-  recordQuestLoopObservation,
-  resetQuestLoopTracker,
-  type QuestLoopClassification,
-} from "./quest-loop-tracker.ts";
+  recordObservation,
+  resetObservationLoopTracker,
+  type ObservationClassification,
+} from "./observation-loop-tracker.ts";
 
 const controller = new MacAppController();
 const [command, ...args] = process.argv.slice(2);
 
 switch (command) {
   case "launch":
-    await controller.launchViaSpotlight(args.join(" ") || undefined);
-    console.log("Game launched and focused.");
+    if (args.length === 0) {
+      throw new TypeError("Usage: pnpm workflow launch <Spotlight query> [process name]");
+    }
+    await controller.launchViaSpotlight(args[0], args[1] ?? args[0]);
+    console.log("App launched and focused.");
     break;
   case "focus":
-    await controller.focusApp(args.join(" ") || "TOSM TH");
-    console.log("Game focused.");
+    if (args.length === 0) {
+      throw new TypeError("Usage: pnpm workflow focus <process name>");
+    }
+    await controller.focusApp(args.join(" "));
+    console.log("App focused.");
     break;
   case "screenshot": {
-    const output = resolve(args[0] ?? "artifacts/tos-screen.png");
+    const output = resolve(args[0] ?? "artifacts/desktop-screen.png");
     await controller.screenshot(output);
     console.log(output);
     break;
   }
   case "window-screenshot": {
-    const output = resolve(args[0] ?? "artifacts/tos-window.png");
-    const result = await controller.screenshotWindow(output);
+    const output = resolve(
+      args.length >= 2 ? args[0] : "artifacts/current-window.png",
+    );
+    const processName = args.length >= 2 ? args.slice(1).join(" ") : args[0];
+    if (!processName) {
+      throw new TypeError(
+        "Usage: pnpm workflow window-screenshot [output.png] <process name>",
+      );
+    }
+    const result = await controller.screenshotWindow(output, processName);
     console.log(JSON.stringify(result, null, 2));
     break;
   }
@@ -40,8 +54,16 @@ switch (command) {
   case "window-click": {
     const x = Number(args[0]);
     const y = Number(args[1]);
-    const imagePath = resolve(args[2] ?? "artifacts/tos-current.png");
-    const result = await controller.clickWindowImage({ x, y }, imagePath);
+    const imagePath = resolve(
+      args.length >= 4 ? args[2] : "artifacts/current-window.png",
+    );
+    const processName = args.length >= 4 ? args.slice(3).join(" ") : args[2];
+    if (!processName) {
+      throw new TypeError(
+        "Usage: pnpm workflow window-click <image-x> <image-y> [source-image.png] <process name>",
+      );
+    }
+    const result = await controller.clickWindowImage({ x, y }, imagePath, processName);
     console.log(JSON.stringify(result, null, 2));
     break;
   }
@@ -61,20 +83,20 @@ switch (command) {
     break;
   }
   case "loop-reset": {
-    const statePath = resolve(args[0] ?? "artifacts/quest-loop-state.json");
-    console.log(JSON.stringify(await resetQuestLoopTracker(statePath), null, 2));
+    const statePath = resolve(args[0] ?? "artifacts/observation-loop-state.json");
+    console.log(JSON.stringify(await resetObservationLoopTracker(statePath), null, 2));
     break;
   }
   case "loop-observe": {
-    const classification = args[0] as QuestLoopClassification;
-    if (classification !== "empty-idle" && classification !== "quest-or-progress") {
-      throw new TypeError("Classification must be empty-idle or quest-or-progress.");
+    const classification = args[0] as ObservationClassification;
+    if (classification !== "idle" && classification !== "activity") {
+      throw new TypeError("Classification must be idle or activity.");
     }
-    const screenshotPath = resolve(args[1] ?? "artifacts/tos-current.png");
-    const statePath = resolve(args[2] ?? "artifacts/quest-loop-state.json");
+    const screenshotPath = resolve(args[1] ?? "artifacts/current-window.png");
+    const statePath = resolve(args[2] ?? "artifacts/observation-loop-state.json");
     console.log(
       JSON.stringify(
-        await recordQuestLoopObservation(classification, screenshotPath, statePath),
+        await recordObservation(classification, screenshotPath, statePath),
         null,
         2,
       ),
@@ -83,15 +105,15 @@ switch (command) {
   }
   default:
     console.log(`Usage:
-  pnpm tos launch [Spotlight query]
-  pnpm tos focus [process name]
-  pnpm tos screenshot [output.png]
-  pnpm tos window-screenshot [output.png]
-  pnpm tos click <x> <y>
-  pnpm tos window-click <image-x> <image-y> [source-image.png]
-  pnpm tos key <macOS key code> [command|control|option|shift ...]
-  pnpm tos doctor [permission-check.png]
-  pnpm tos loop-reset [state.json]
-  pnpm tos loop-observe <empty-idle|quest-or-progress> [screenshot.png] [state.json]`);
+  pnpm workflow launch <Spotlight query> [process name]
+  pnpm workflow focus <process name>
+  pnpm workflow screenshot [output.png]
+  pnpm workflow window-screenshot [output.png] <process name>
+  pnpm workflow click <x> <y>
+  pnpm workflow window-click <image-x> <image-y> [source-image.png] <process name>
+  pnpm workflow key <macOS key code> [command|control|option|shift ...]
+  pnpm workflow doctor [permission-check.png]
+  pnpm workflow loop-reset [state.json]
+  pnpm workflow loop-observe <idle|activity> [screenshot.png] [state.json]`);
     process.exitCode = command ? 1 : 0;
 }

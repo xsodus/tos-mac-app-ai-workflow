@@ -1,0 +1,4 @@
+interface:
+  display_name: "Run Visual Desktop Loop"
+  short_description: "Operate a desktop workflow through repeated screenshot-driven verification."
+  default_prompt: "Use this skill to run a screenshot-driven desktop workflow on macOS. Observe the app, classify the visible state, take one highest-priority action, verify the result with a fresh screenshot, and stop only after repeated idle confirmation."

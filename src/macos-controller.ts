@@ -41,10 +41,10 @@ export class MacAppController {
     this.commandTimeoutMs = options.commandTimeoutMs ?? 15_000;
   }
 
-  async launchViaSpotlight(
-    query = "Tree of Savior M Extreme",
-    processName = "TOSM TH",
-  ): Promise<void> {
+  async launchViaSpotlight(query: string, processName = query): Promise<void> {
+    if (!query) {
+      throw new TypeError("Spotlight query is required.");
+    }
     await this.runAppleScript([
       'tell application "System Events"',
       "key code 49 using {command down}",
@@ -122,7 +122,7 @@ export class MacAppController {
     return outputPath;
   }
 
-  async getWindowBounds(processName = "TOSM TH"): Promise<WindowBounds> {
+  async getWindowBounds(processName: string): Promise<WindowBounds> {
     let lastError: unknown;
     for (let attempt = 1; attempt <= WINDOW_QUERY_ATTEMPTS; attempt += 1) {
       try {
@@ -148,7 +148,7 @@ export class MacAppController {
 
   async screenshotWindow(
     outputPath: string,
-    processName = "TOSM TH",
+    processName: string,
   ): Promise<{ path: string; bounds: WindowBounds; imageSize: ImageSize }> {
     await this.focusApp(processName);
     const bounds = await this.getWindowBounds(processName);
@@ -162,7 +162,7 @@ export class MacAppController {
   async clickWindowImage(
     imagePoint: Point,
     imagePath: string,
-    processName = "TOSM TH",
+    processName: string,
   ): Promise<{
     imagePoint: Point;
     windowPoint: Point;

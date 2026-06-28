@@ -5,6 +5,8 @@ description: Run visible main and sub quests in Tree of Savior M Extreme on macO
 
 # Run Tree Of Savior M Extreme Quests
 
+> Example only. Verify compliance with software Terms of Service before use.
+
 ## When To Use
 
 Use this skill when the goal is to keep playing visible main and sub quests in
@@ -26,7 +28,7 @@ location:
 
 ```bash
 cd "$(git rev-parse --show-toplevel)"
-pnpm tos doctor
+pnpm workflow doctor
 ```
 
 If the current directory is not inside the controller repository, first locate
@@ -41,13 +43,13 @@ missing; do not pretend the live loop ran.
 Available commands:
 
 ```bash
-pnpm tos launch
-pnpm tos focus
-pnpm tos window-screenshot artifacts/tos-current.png
-pnpm tos window-click <image-x> <image-y> artifacts/tos-current.png
-pnpm tos key <macOS-key-code> [command|control|option|shift ...]
-pnpm tos loop-reset
-pnpm tos loop-observe <empty-idle|quest-or-progress> artifacts/tos-current.png
+pnpm workflow launch "Tree of Savior M Extreme" "TOSM TH"
+pnpm workflow focus "TOSM TH"
+pnpm workflow window-screenshot artifacts/tos-current.png "TOSM TH"
+pnpm workflow window-click <image-x> <image-y> artifacts/tos-current.png "TOSM TH"
+pnpm workflow key <macOS-key-code> [command|control|option|shift ...]
+pnpm workflow loop-reset
+pnpm workflow loop-observe <idle|activity> artifacts/tos-current.png
 ```
 
 Use `window-screenshot`, not a whole-desktop screenshot, for game decisions. It
@@ -62,10 +64,10 @@ After every state-changing input, capture a fresh window screenshot and inspect
 it before choosing the next input. Never reuse coordinates from a previous
 window size.
 
-Run `pnpm tos loop-reset` once before entering the quest loop. After inspecting
-every fresh screenshot, run `loop-observe quest-or-progress` if any quest,
+Run `pnpm workflow loop-reset` once before entering the quest loop. After inspecting
+every fresh screenshot, run `loop-observe activity` if any quest,
 objective, dialogue, reward, loading, combat, transition, or recovery state is
-visible. Run `loop-observe empty-idle` only for an idle, unobstructed in-game
+visible. Run `loop-observe idle` only for an idle, unobstructed in-game
 screen with none of those states. The command persists `empty_state_count`,
 rejects reused or insufficiently separated empty screenshots, and returns
 `mustContinue: true` until three valid empty observations have accumulated.
@@ -73,9 +75,9 @@ Never send a final response while it returns `mustContinue: true`.
 
 ### Launch
 
-1. Run `pnpm tos launch` to open Spotlight, type the exact app name, press Return,
+1. Run `pnpm workflow launch "Tree of Savior M Extreme" "TOSM TH"` to open Spotlight, type the exact app name, press Return,
    wait for the game process, and bring its window to the front.
-2. If the full title is not resolving, run `pnpm tos launch "TOSM TH"`.
+2. If the full title is not resolving, run `pnpm workflow launch "TOSM TH" "TOSM TH"`.
 3. If multiple results appear, select the application result, not a document or web suggestion.
 4. Capture a window screenshot and confirm the title screen appears.
 6. If Spotlight does not show the app, refine the query with more of the title. Do not rely on `open` with the app path as the primary fallback for this wrapper.
@@ -196,7 +198,7 @@ main quest, sub quest, objective marker, or quest action prompt remains.
 If the session times out, disconnects, returns to title, or gets stuck on a loading/session screen:
 
 1. If a controller screenshot fails because the `TOSM TH` window or process is
-   temporarily unavailable, run `pnpm tos launch`, capture a fresh screenshot,
+   temporarily unavailable, run `pnpm workflow launch "Tree of Savior M Extreme" "TOSM TH"`, capture a fresh screenshot,
    and inspect the recovered state before counting a retry.
 2. If the recovered state contains a `ตอบรับ` reward dialog, click it
    immediately and resume the quest loop. Do not classify the interruption as
