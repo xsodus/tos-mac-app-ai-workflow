@@ -12,18 +12,26 @@ Use this skill when the goal is to keep playing visible main and sub quests in
 screen, barrack, and character-selection actions exist only to reach or recover
 the active quest session.
 
-The install on this machine is an iOS-on-Mac wrapper. Spotlight can surface the app, but path-based `open` commands against the top-level container or nested `Wrapper/TOSM TH.app` bundle may be rejected by LaunchServices.
+The game may be installed as an iOS-on-Mac wrapper. Spotlight can surface the
+app even when LaunchServices rejects path-based `open` commands against the
+top-level container or nested `Wrapper/TOSM TH.app` bundle.
 
 ## Workflow
 
 ### Controller Contract
 
-Run the TypeScript controller from the repository root:
+Run the TypeScript controller from the repository root. Resolve that root from
+the current Git worktree; never assume a user name or an absolute checkout
+location:
 
 ```bash
-cd /Users/akkaponsomjai/personal/tos-mac-app-ai-workflow
+cd "$(git rev-parse --show-toplevel)"
 pnpm tos doctor
 ```
+
+If the current directory is not inside the controller repository, first locate
+the checkout containing this skill, `package.json`, and `src/cli.ts`, then run
+the commands from that checkout's root.
 
 The controller is the primary keyboard, pointer, and screenshot interface for
 this skill. Before launch, require both `accessibility` and `screenRecording` to
@@ -189,7 +197,7 @@ a final response.
 
 - Use this workflow for the specific game, not as a generic app-launch pattern.
 - Favor the exact app title when available, since it avoids ambiguity in Spotlight.
-- This installation uses a wrapper; the nested bundle lives at `Tree of Savior M Extreme.app/Wrapper/TOSM TH.app`, but direct `open` can fail with `incorrect executable format`.
+- A wrapper installation may contain the nested bundle at `Tree of Savior M Extreme.app/Wrapper/TOSM TH.app`; direct `open` can fail with `incorrect executable format`.
 - Treat the visible game window title as the success check.
 - Treat the title/server screen as a real pre-game state, not as launch failure.
 - Treat the barrack screen as the handoff point into the session via `Start`.
