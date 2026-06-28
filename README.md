@@ -2,6 +2,10 @@
 
 Shared AI agent skills and harness configs for the Tree of Savior Extreme app workflow only.
 
+## Actual Run Screenshot
+
+![Actual run screenshot](docs/images/actual-run-screenshot.png)
+
 ## Stack
 
 - Node.js 22
