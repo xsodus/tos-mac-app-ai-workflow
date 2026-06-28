@@ -1,4 +1,4 @@
 interface:
   display_name: "Run Tree of Savior M Extreme Quests"
   short_description: "Activate and run visible TOS quests until exhausted."
-  default_prompt: "Use this skill to continue visible main and sub quests in Tree of Savior M Extreme until none remain. Enter or recover the game session only as needed, keep a fellow active when safely possible, explicitly activate visible quest tracker entries, verify quest-specific progress, accept ordinary quest rewards, and stop only after three confirmed empty quest states."
+  default_prompt: "Use this skill to continue visible main and sub quests in Tree of Savior M Extreme until none remain. Enter or recover the game session only as needed, keep a fellow active when safely possible, recheck that auto-potion is properly configured before every new quest, explicitly activate visible quest tracker entries, verify quest-specific progress, accept ordinary quest rewards, and stop only after three confirmed empty quest states."

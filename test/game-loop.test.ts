@@ -75,7 +75,7 @@ test("plays the complete title-to-quest-exhaustion loop", async () => {
 
 test("stops after three repeated recovery failures", async () => {
   const adapter = new ScriptedAdapter(["loading", "loading", "loading"]);
-  const result = await playFullLoop(adapter);
+  const result = await playFullLoop(adapter, { maxRepeatedRecoveryStates: 3 });
 
   assert.equal(result.status, "stuck");
   assert.equal(adapter.actions.length, 2);
@@ -98,6 +98,26 @@ test("resets empty-state confirmation when another quest appears", async () => {
     "wait",
     "wait",
     "advance-main-quest",
+    "wait",
+    "wait",
+  ]);
+});
+
+test("activates objective markers and quest action prompts", async () => {
+  const adapter = new ScriptedAdapter([
+    "objective-marker",
+    "quest-action-prompt",
+    "quests-exhausted",
+    "quests-exhausted",
+    "quests-exhausted",
+  ]);
+
+  const result = await playFullLoop(adapter);
+
+  assert.equal(result.status, "completed");
+  assert.deepEqual(adapter.actions, [
+    "activate-objective",
+    "activate-objective",
     "wait",
     "wait",
   ]);
