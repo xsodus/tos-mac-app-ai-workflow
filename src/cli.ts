@@ -5,6 +5,7 @@ import {
   resetObservationLoopTracker,
   type ObservationClassification,
 } from "./observation-loop-tracker.ts";
+import { isTosClickPreset, tosPresetPoint } from "./tos-presets.ts";
 
 const controller = new MacAppController();
 const [command, ...args] = process.argv.slice(2);
@@ -67,6 +68,23 @@ switch (command) {
     console.log(JSON.stringify(result, null, 2));
     break;
   }
+  case "tos-click": {
+    const preset = args[0];
+    if (!preset || !isTosClickPreset(preset)) {
+      throw new TypeError(
+        "Usage: pnpm workflow tos-click <yellow-quest|quest-accept|quest-action|fellow-menu> [source-image.png] [process name]",
+      );
+    }
+    const imagePath = resolve(args[1] ?? "artifacts/tos-current.png");
+    const processName = args.slice(2).join(" ") || "TOSM TH";
+    const result = await controller.clickWindowImageNormalized(
+      tosPresetPoint(preset),
+      imagePath,
+      processName,
+    );
+    console.log(JSON.stringify({ preset, ...result }, null, 2));
+    break;
+  }
   case "key": {
     const keyCode = Number(args[0]);
     await controller.pressKey(keyCode, args.slice(1));
@@ -111,6 +129,7 @@ switch (command) {
   pnpm workflow window-screenshot [output.png] <process name>
   pnpm workflow click <x> <y>
   pnpm workflow window-click <image-x> <image-y> [source-image.png] <process name>
+  pnpm workflow tos-click <yellow-quest|quest-accept|quest-action|fellow-menu> [source-image.png] [process name]
   pnpm workflow key <macOS key code> [command|control|option|shift ...]
   pnpm workflow doctor [permission-check.png]
   pnpm workflow loop-reset [state.json]

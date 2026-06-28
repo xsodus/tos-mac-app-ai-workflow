@@ -1,6 +1,6 @@
 ---
 name: run-tree-of-savior-m-extreme-quests
-description: Run visible main and sub quests in Tree of Savior M Extreme on macOS using visual Computer Use until no quests remain. Use when the user wants to continue, resume, or complete TOS M Extreme quests; launch and session-entry steps are only setup or recovery for reaching the quest loop.
+description: Run the visible yellow main quest in Tree of Savior M Extreme on macOS using visual Computer Use until no yellow quest remains on the HUD. Use when the user wants to continue, resume, or complete TOS M Extreme quests; launch and session-entry steps are only setup or recovery for reaching the quest loop.
 ---
 
 # Run Tree Of Savior M Extreme Quests
@@ -9,8 +9,9 @@ description: Run visible main and sub quests in Tree of Savior M Extreme on macO
 
 ## When To Use
 
-Use this skill when the goal is to keep playing visible main and sub quests in
-`Tree of Savior M Extreme` until the quest list is exhausted. Launch, title
+Use this skill when the goal is to keep playing the visible yellow main quest in
+`Tree of Savior M Extreme` until no yellow quest card remains on the HUD. Dim or
+gray quest cards may remain and do not block completion. Launch, title
 screen, barrack, and character-selection actions exist only to reach or recover
 the active quest session.
 
@@ -47,6 +48,7 @@ pnpm workflow launch "Tree of Savior M Extreme" "TOSM TH"
 pnpm workflow focus "TOSM TH"
 pnpm workflow window-screenshot artifacts/tos-current.png "TOSM TH"
 pnpm workflow window-click <image-x> <image-y> artifacts/tos-current.png "TOSM TH"
+pnpm workflow tos-click <yellow-quest|quest-accept|quest-action|fellow-menu> artifacts/tos-current.png "TOSM TH"
 pnpm workflow key <macOS-key-code> [command|control|option|shift ...]
 pnpm workflow loop-reset
 pnpm workflow loop-observe <idle|activity> artifacts/tos-current.png
@@ -59,6 +61,20 @@ pass the pixel point and image path to `window-click`. The controller handles
 Retina scaling, translates the result to the correct global point, and injects
 the click through Core Graphics even when the game is on a monitor above or to
 the left of the primary display.
+
+After visually confirming the expected control on the current screenshot, use
+`tos-click` for its named stable target instead of recalculating coordinates:
+
+- `yellow-quest` clicks the yellow main-quest card.
+- `quest-accept` clicks the right-hand teal `ตอบรับ` button when a gray decline
+  button is also visible.
+- `quest-action` clicks the centered teal action on a single-action quest reward
+  dialog, including equivalent quest verbs such as `ปลดปล่อย`.
+- `fellow-menu` opens Fellow from the stable top-right menu row.
+
+These presets are fast paths, not state detection. Never use one unless the
+matching control is visibly present on the fresh screenshot. Continue using
+`window-click` for team slots, Join, confirmations, or any shifted/ambiguous UI.
 
 After every state-changing input, capture a fresh window screenshot and inspect
 it before choosing the next input. Never reuse coordinates from a previous
@@ -116,7 +132,7 @@ capturing and acting until the explicit exhaustion check below succeeds.
    deployed-state evidence. Do not click `Remove`, purchase, fuse, dismiss,
    delete, or upgrade fellows unless the user explicitly asks. If fewer than two
    fellows can be safely selected, deploy the available fellow and continue.
-8. Before activating each new main or sub quest, inspect the first slot in the
+8. Before activating each new yellow main quest, inspect the first slot in the
    top row at the left edge of the skill bar. This is the configurable
    auto-potion slot. A potion marked with a Roman numeral I–VI and a positive
    quantity is the assigned stack; for example, `IV` with `131` means Potion IV
@@ -134,9 +150,11 @@ capturing and acting until the explicit exhaustion check below succeeds.
    Re-check it after recovery, character reload, or any map/session transition.
    Do not activate the new quest until the check passes. Use potions already in
    inventory; do not buy potions or spend currency without explicit permission.
-11. Prioritize main quests first, then sub quests. A visible quest tracker entry
-   is not necessarily active, even when unrelated auto-combat is running. Click
-   the highest-priority visible quest entry to activate it, capture a fresh
+11. Treat the yellow quest card at the top of the HUD tracker as the required
+   main quest. Dim or gray cards below it are not part of this skill's completion
+   goal. A visible yellow quest card is not necessarily active, even when
+   unrelated auto-combat is running. Click the yellow quest card to activate it,
+   capture a fresh
    screenshot, and confirm that auto-path, dialogue, an objective marker, or
    another quest-specific state begins. If it does not activate, click the next
    visible quest entry and verify again.
@@ -150,7 +168,7 @@ capturing and acting until the explicit exhaustion check below succeeds.
     click `ปฏิเสธ` (Decline). This permission applies only to ordinary quest
     rewards and does not authorize purchases or premium-currency choices.
 13. Immediately after accepting a reward, capture a fresh screenshot. Before
-    clicking the next visible main or sub quest, complete the auto-potion check
+    clicking the next visible yellow main quest, complete the auto-potion check
     again. Accepting a reward is never a stopping condition.
 14. While dialogue with auto-talk is active, wait only 5 through 8 seconds,
     capture a fresh screenshot, and immediately accept any resulting `ตอบรับ`
@@ -160,24 +178,23 @@ capturing and acting until the explicit exhaustion check below succeeds.
     continue the loop. Do not repeatedly click the tracker while verified quest
     progress is active. Generic auto-combat without a quest-specific indicator
     does not count as verified quest progress.
-15. If any quest tracker entry is visible and no verified quest progress is
-    active, first pass the auto-potion check, then click the highest-priority
-    visible entry: main quest first, then sub quest. Do this even if the
-    character is fighting nearby enemies. Capture a fresh screenshot after
-    every click and activate the next visible entry if the first one does not
-    start a quest-specific state.
+15. If a yellow quest card is visible and no verified quest progress is active,
+    first pass the auto-potion check, then click that yellow card. Do this even
+    if the character is fighting nearby enemies. Capture a fresh screenshot
+    after every click and verify that it starts a quest-specific state. Do not
+    activate dim or gray quest cards merely to satisfy this skill.
 16. Re-check for a fellow after session recovery, map changes, or character
     reloads. If the fellow disappears, repeat the fellow check before continuing
     quests.
 17. Never infer exhaustion from a hidden tracker during combat, dialogue,
     loading, a reward dialog, a transition, or a cinematic.
-18. Count an empty state only when a fresh screenshot shows an idle,
-    unobstructed in-game UI with no main quest, sub quest, objective marker, or
-    quest action prompt. Require three empty states, each separated by 5
-    seconds. Reset the count to zero whenever any quest or progress state
+18. Count a goal-complete state only when a fresh screenshot shows an idle,
+    unobstructed in-game HUD with no yellow quest card. Dim or gray quest cards
+    may remain. Require three goal-complete states, each separated by 5 seconds.
+    Reset the count to zero whenever a yellow quest card or quest progress state
     appears.
-19. Stop only after the third consecutive confirmed empty state. Report that
-    the quest list appears exhausted.
+19. Stop only after the third consecutive confirmed goal-complete state. Report
+    that no yellow quest remains on the HUD.
 
 Use this literal control structure; a status update never exits it:
 
@@ -186,12 +203,13 @@ empty_state_count = 0
 while empty_state_count < 3:
     capture and inspect a fresh game-window screenshot
     record it with loop-observe
-    if empty and idle: wait 5 seconds
+    if idle, unobstructed, and no yellow quest card: wait 5 seconds
     else: reset the count and handle the highest-priority state
 ```
 
 Do not report completion unless three final screenshots visibly confirm that no
-main quest, sub quest, objective marker, or quest action prompt remains.
+yellow quest card remains on the unobstructed HUD. Gray quest cards do not block
+completion.
 
 ### Timeout Recovery
 
@@ -221,7 +239,7 @@ a final response.
 - Treat the title/server screen as a real pre-game state, not as launch failure.
 - Treat the barrack screen as the handoff point into the session via `Start`.
 - Keep a fellow/companion active when the UI provides a safe summon or deploy action.
-- Treat an empty or ambiguous tracker as non-terminal until the three-screenshot
-  exhaustion check succeeds. Do not invent an objective; capture again and
+- Treat a hidden or ambiguous tracker as non-terminal until the three-screenshot
+  no-yellow-quest check succeeds. Do not invent an objective; capture again and
   continue the loop.
 - Do not spend premium currency, delete items, change account settings, or make irreversible choices unless the user explicitly asks.

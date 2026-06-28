@@ -207,6 +207,30 @@ export class MacAppController {
     return { imagePoint, windowPoint, globalPoint, bounds, imageSize };
   }
 
+  async clickWindowImageNormalized(
+    normalizedPoint: Point,
+    imagePath: string,
+    processName: string,
+  ) {
+    if (
+      normalizedPoint.x < 0 ||
+      normalizedPoint.x > 1 ||
+      normalizedPoint.y < 0 ||
+      normalizedPoint.y > 1
+    ) {
+      throw new RangeError("Normalized image coordinates must be between 0 and 1.");
+    }
+    const imageSize = await this.getImageSize(imagePath);
+    return this.clickWindowImage(
+      {
+        x: Math.round(normalizedPoint.x * imageSize.width),
+        y: Math.round(normalizedPoint.y * imageSize.height),
+      },
+      imagePath,
+      processName,
+    );
+  }
+
   async checkPermissions(screenshotPath: string): Promise<MacAutomationPermissions> {
     let accessibility = false;
     let screenRecording = false;
