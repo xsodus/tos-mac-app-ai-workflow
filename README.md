@@ -84,3 +84,34 @@ pnpm test
 `src/game-loop.ts` keeps visual state detection behind `GameAdapter`; the next
 adapter can use screenshots or recorded UI events without changing the
 quest-loop safety rules.
+
+## Workflow
+
+The repository is split into two layers:
+
+- the Codex skill defines the gameplay policy and recovery rules
+- the TypeScript CLI/controller provides the concrete macOS inputs, screenshots,
+  and loop-state persistence that the skill relies on
+
+```mermaid
+flowchart TD
+    U["User asks Codex to continue quests"] --> S["Skill: run-tree-of-savior-m-extreme-quests<br/>Defines launch, recovery, quest, and stop rules"]
+    S --> D["pnpm tos doctor<br/>Verify Accessibility + Screen Recording"]
+    D --> C["CLI: src/cli.ts<br/>Command surface for launch, screenshot, click, key, loop-reset, loop-observe"]
+    C --> M["Controller: src/macos-controller.ts<br/>Spotlight launch, focus app, capture window, translate image coords, inject input"]
+    M --> G["Tree of Savior M Extreme window"]
+    G --> W["Fresh window screenshot<br/>artifacts/tos-current.png"]
+    W --> S
+    S --> T["pnpm tos loop-observe<br/>Record empty-idle vs quest-or-progress"]
+    T --> Q["Tracker: src/quest-loop-tracker.ts<br/>Require 3 separated empty observations"]
+    Q --> S
+    S --> A["Next action<br/>launch, click quest, accept reward, wait, recover"]
+    A --> C
+```
+
+In practice, the skill is the decision-maker and the controller is the
+interface layer. The skill inspects each fresh game-window screenshot, chooses
+the next action, invokes the CLI, then rechecks the result with another
+screenshot. The quest loop only stops after `loop-observe` records three valid
+empty idle states, which keeps the interface honest about whether quests are
+actually exhausted.

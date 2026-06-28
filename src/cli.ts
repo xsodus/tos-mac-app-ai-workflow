@@ -1,5 +1,10 @@
 import { resolve } from "node:path";
 import { MacAppController } from "./macos-controller.ts";
+import {
+  recordQuestLoopObservation,
+  resetQuestLoopTracker,
+  type QuestLoopClassification,
+} from "./quest-loop-tracker.ts";
 
 const controller = new MacAppController();
 const [command, ...args] = process.argv.slice(2);
@@ -55,6 +60,27 @@ switch (command) {
     }
     break;
   }
+  case "loop-reset": {
+    const statePath = resolve(args[0] ?? "artifacts/quest-loop-state.json");
+    console.log(JSON.stringify(await resetQuestLoopTracker(statePath), null, 2));
+    break;
+  }
+  case "loop-observe": {
+    const classification = args[0] as QuestLoopClassification;
+    if (classification !== "empty-idle" && classification !== "quest-or-progress") {
+      throw new TypeError("Classification must be empty-idle or quest-or-progress.");
+    }
+    const screenshotPath = resolve(args[1] ?? "artifacts/tos-current.png");
+    const statePath = resolve(args[2] ?? "artifacts/quest-loop-state.json");
+    console.log(
+      JSON.stringify(
+        await recordQuestLoopObservation(classification, screenshotPath, statePath),
+        null,
+        2,
+      ),
+    );
+    break;
+  }
   default:
     console.log(`Usage:
   pnpm tos launch [Spotlight query]
@@ -64,6 +90,8 @@ switch (command) {
   pnpm tos click <x> <y>
   pnpm tos window-click <image-x> <image-y> [source-image.png]
   pnpm tos key <macOS key code> [command|control|option|shift ...]
-  pnpm tos doctor [permission-check.png]`);
+  pnpm tos doctor [permission-check.png]
+  pnpm tos loop-reset [state.json]
+  pnpm tos loop-observe <empty-idle|quest-or-progress> [screenshot.png] [state.json]`);
     process.exitCode = command ? 1 : 0;
 }

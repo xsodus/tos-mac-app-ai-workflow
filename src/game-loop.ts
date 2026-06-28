@@ -10,6 +10,8 @@ export type GameState =
   | "quest-dialogue"
   | "quest-reward"
   | "quest-progressing"
+  | "objective-marker"
+  | "quest-action-prompt"
   | "loading"
   | "disconnected"
   | "quests-exhausted"
@@ -30,6 +32,7 @@ export type GameAction =
   | "advance-sub-quest"
   | "enable-auto-talk"
   | "accept-quest-reward"
+  | "activate-objective"
   | "wait";
 
 export interface GameAdapter {
@@ -59,8 +62,9 @@ export async function playFullLoop(
   adapter: GameAdapter,
   options: GameLoopOptions = {},
 ): Promise<LoopResult> {
-  const maxSteps = options.maxSteps ?? 200;
-  const maxRepeatedRecoveryStates = options.maxRepeatedRecoveryStates ?? 3;
+  const maxSteps = options.maxSteps ?? Number.POSITIVE_INFINITY;
+  const maxRepeatedRecoveryStates =
+    options.maxRepeatedRecoveryStates ?? Number.POSITIVE_INFINITY;
   const requiredEmptyObservations = options.requiredEmptyObservations ?? 3;
   const events: LoopEvent[] = [];
   let previousRecoveryState: GameState | undefined;
@@ -141,6 +145,9 @@ function actionFor(state: GameState): GameAction {
       return "accept-quest-reward";
     case "quest-progressing":
       return "wait";
+    case "objective-marker":
+    case "quest-action-prompt":
+      return "activate-objective";
     case "loading":
     case "unknown":
       return "wait";
