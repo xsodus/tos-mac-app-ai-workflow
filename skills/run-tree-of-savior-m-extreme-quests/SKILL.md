@@ -100,25 +100,39 @@ capturing and acting until the explicit exhaustion check below succeeds.
 2. If the game is on the barrack screen, click the visible `Start` button to enter the session.
 3. On the character screen, select the available or previously used character, then activate the visible enter/start control.
 4. Once in game, inspect the quest tracker and nearby objective markers.
-5. Check whether a fellow/companion is present before running objectives. If no fellow is visible, use the fellow/companion menu, summon control, or visible fellow prompt to deploy an available fellow.
-6. If the game offers multiple fellows, choose the previously used or clearly recommended fellow. Do not purchase, fuse, dismiss, delete, or upgrade fellows unless the user explicitly asks.
-7. If no fellow can be safely selected, continue the quest loop without one and mention that no fellow was available.
-8. Before activating each new main or sub quest, open or inspect the auto-potion
-   controls and confirm that automatic potion use is enabled. Auto-potion slots
-   are accessed by clicking the potion bottle icons on the left edge of the
-   skill bar (bottom-right area of the screen). Only slot one (the top-left
-   slot) is configurable. Eligible items are marked with Roman numerals I–VI.
-   Assign an available I–VI potion to slot one if it is empty, confirm the
-   stack is not empty, and verify the trigger threshold is visibly set rather
-   than disabled. Preserve an existing working threshold; if a threshold is
-   unset, use the game's default or clearly recommended value. Capture a fresh
-   screenshot after any change and verify the enabled state, assignment,
-   quantity, and threshold before closing the controls.
-9. Re-run the auto-potion check even if it passed for the previous quest.
+5. Check whether fellows are deployed before running objectives. The circular
+   portraits beside the skill bar do not prove that fellows occupy the active
+   team. Open `Fellow` with the fourth icon in the top-right menu row and inspect
+   the two team slots in the lower-right `จัดทีม` panel.
+6. Fill both empty team slots when two safe fellows are available. Select the
+   previously used, highest-level, or clearly recommended fellow, click `Join`,
+   click the intended `+` team slot, then confirm `ร่วมทาง` in the notification.
+   Joining deducts one point from that fellow's stamina; this is normal
+   deployment, not a purchase. Repeat for the second slot and verify that both
+   slots show fellow cards before closing the screen.
+7. Do not treat the selected fellow's large center model or the bottom roster as
+   deployed-state evidence. Do not click `Remove`, purchase, fuse, dismiss,
+   delete, or upgrade fellows unless the user explicitly asks. If fewer than two
+   fellows can be safely selected, deploy the available fellow and continue.
+8. Before activating each new main or sub quest, inspect the first slot in the
+   top row at the left edge of the skill bar. This is the configurable
+   auto-potion slot. A potion marked with a Roman numeral I–VI and a positive
+   quantity is the assigned stack; for example, `IV` with `131` means Potion IV
+   is assigned with 131 remaining. Do not confuse the lower red-outlined
+   utility slots with auto-potion slots.
+9. Do not click the assigned potion merely to verify it: clicking the potion
+   consumes one immediately. Preserve a visible existing assignment. Only open
+   configuration when the first top-row slot is empty or its automatic-use
+   state is ambiguous; then assign an available I–VI potion, confirm a positive
+   quantity, and preserve the existing trigger threshold. If the threshold is
+   unset, use the game's default or clearly recommended value. Do not buy
+   potions or spend currency. Capture a fresh screenshot after any change and
+   verify the first top-row slot before closing the controls.
+10. Re-run the auto-potion check even if it passed for the previous quest.
    Re-check it after recovery, character reload, or any map/session transition.
    Do not activate the new quest until the check passes. Use potions already in
    inventory; do not buy potions or spend currency without explicit permission.
-10. Prioritize main quests first, then sub quests. A visible quest tracker entry
+11. Prioritize main quests first, then sub quests. A visible quest tracker entry
    is not necessarily active, even when unrelated auto-combat is running. Click
    the highest-priority visible quest entry to activate it, capture a fresh
    screenshot, and confirm that auto-path, dialogue, an objective marker, or

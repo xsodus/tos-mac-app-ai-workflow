@@ -16,7 +16,9 @@ export type QuestLoopStatus = TrackerState & {
 
 const REQUIRED_EMPTY_STATES = 3;
 const EMPTY_INTERVAL_MS = 5_000;
-const MAX_SCREENSHOT_AGE_MS = 30_000;
+// Leave enough time for a high-resolution capture to be visually inspected
+// before the next controller command. Reuse is still rejected by mtime below.
+const MAX_SCREENSHOT_AGE_MS = 600_000;
 
 export async function resetQuestLoopTracker(statePath: string): Promise<QuestLoopStatus> {
   const state: TrackerState = { emptyStateCount: 0 };

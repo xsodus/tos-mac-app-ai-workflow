@@ -31,6 +31,8 @@ export type MacAutomationPermissions = {
 };
 
 const APPLE_SCRIPT_MODIFIERS = new Set(["command", "control", "option", "shift"]);
+const WINDOW_QUERY_ATTEMPTS = 3;
+const WINDOW_QUERY_RETRY_DELAY_MS = 500;
 
 export class MacAppController {
   readonly commandTimeoutMs: number;
@@ -56,18 +58,30 @@ export class MacAppController {
   }
 
   async focusApp(processName: string): Promise<void> {
-    await this.runAppleScript([
-      'tell application "System Events"',
-      "repeat 30 times",
-      `if exists process ${appleScriptString(processName)} then`,
-      `set frontmost of process ${appleScriptString(processName)} to true`,
-      "return",
-      "end if",
-      "delay 0.5",
-      "end repeat",
-      `error "Timed out waiting for process ${escapeAppleScriptError(processName)}"`,
-      "end tell",
-    ]);
+    let lastError: unknown;
+    for (let attempt = 1; attempt <= WINDOW_QUERY_ATTEMPTS; attempt += 1) {
+      try {
+        await this.runAppleScript([
+          'tell application "System Events"',
+          "repeat 30 times",
+          `if exists process ${appleScriptString(processName)} then`,
+          `set frontmost of process ${appleScriptString(processName)} to true`,
+          "return",
+          "end if",
+          "delay 0.5",
+          "end repeat",
+          `error "Timed out waiting for process ${escapeAppleScriptError(processName)}"`,
+          "end tell",
+        ]);
+        return;
+      } catch (error) {
+        lastError = error;
+        if (attempt < WINDOW_QUERY_ATTEMPTS) {
+          await delay(WINDOW_QUERY_RETRY_DELAY_MS);
+        }
+      }
+    }
+    throw lastError;
   }
 
   async click(point: Point): Promise<void> {
@@ -109,22 +123,34 @@ export class MacAppController {
   }
 
   async getWindowBounds(processName = "TOSM TH"): Promise<WindowBounds> {
-    const output = await this.runAppleScript([
-      'tell application "System Events"',
-      `tell process ${appleScriptString(processName)}`,
-      "set {windowX, windowY} to position of window 1",
-      "set {windowWidth, windowHeight} to size of window 1",
-      'return (windowX as text) & "," & (windowY as text) & "," & (windowWidth as text) & "," & (windowHeight as text)',
-      "end tell",
-      "end tell",
-    ]);
-    return parseWindowBounds(output);
+    let lastError: unknown;
+    for (let attempt = 1; attempt <= WINDOW_QUERY_ATTEMPTS; attempt += 1) {
+      try {
+        const output = await this.runAppleScript([
+          'tell application "System Events"',
+          `tell process ${appleScriptString(processName)}`,
+          "set {windowX, windowY} to position of window 1",
+          "set {windowWidth, windowHeight} to size of window 1",
+          'return (windowX as text) & "," & (windowY as text) & "," & (windowWidth as text) & "," & (windowHeight as text)',
+          "end tell",
+          "end tell",
+        ]);
+        return parseWindowBounds(output);
+      } catch (error) {
+        lastError = error;
+        if (attempt < WINDOW_QUERY_ATTEMPTS) {
+          await delay(WINDOW_QUERY_RETRY_DELAY_MS);
+        }
+      }
+    }
+    throw lastError;
   }
 
   async screenshotWindow(
     outputPath: string,
     processName = "TOSM TH",
   ): Promise<{ path: string; bounds: WindowBounds; imageSize: ImageSize }> {
+    await this.focusApp(processName);
     const bounds = await this.getWindowBounds(processName);
     await mkdir(dirname(outputPath), { recursive: true });
     const rectangle = `${bounds.x},${bounds.y},${bounds.width},${bounds.height}`;
@@ -146,6 +172,7 @@ export class MacAppController {
   }> {
     assertNonNegativeInteger(imagePoint.x, "x");
     assertNonNegativeInteger(imagePoint.y, "y");
+    await this.focusApp(processName);
     const bounds = await this.getWindowBounds(processName);
     const imageSize = await this.getImageSize(imagePath);
 
@@ -160,7 +187,6 @@ export class MacAppController {
       x: bounds.x + windowPoint.x,
       y: bounds.y + windowPoint.y,
     };
-    await this.focusApp(processName);
     await this.click(globalPoint);
     return { imagePoint, windowPoint, globalPoint, bounds, imageSize };
   }
@@ -225,6 +251,10 @@ export class MacAppController {
       );
     }
   }
+}
+
+function delay(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
 function appleScriptString(value: string): string {
